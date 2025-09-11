@@ -1,7 +1,7 @@
 {
-  "name": "JEE Prep Tracker",
-  "short_name": "JEE Tracker",
-  "start_url": "checklist.html",
+  "name": "JEE Prep Checklist",
+  "short_name": "PrepMate",
+  "start_url": "index.html",
   "display": "standalone",
   "background_color": "#000000",
   "theme_color": "#000000",
