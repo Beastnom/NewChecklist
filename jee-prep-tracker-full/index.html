@@ -80,16 +80,31 @@ header h1:hover{
 header p{ margin-top:8px; opacity:0.85; font-size:1.05rem; }
 
 
-#theme-toggle{
-  position:absolute; top:120px; right:24px;
-  width:42px; height:42px; border-radius:50%; border:none;
-  cursor:pointer; font-size:1.2rem;
-  background: linear-gradient(135deg,#ffb6c1,#f8c8ff);
-  display:flex; align-items:center; justify-content:center;
-  box-shadow:0 6px 20px rgba(0,0,0,0.25);
-  transition: all 0.3s ease;
+.theme-orb {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 0 8px rgba(255,255,255,0.2);
 }
-#theme-toggle:hover{ transform: scale(1.1) rotate(10deg); }
+
+.theme-orb:hover {
+  transform: scale(1.15);
+  box-shadow: 0 0 16px rgba(255,255,255,0.4);
+}
+
+#theme-icon {
+  transition: all 0.5s ease;
+}
+
 
 
 .container{ max-width:980px; margin:20px auto; padding:10px; }
@@ -300,6 +315,68 @@ body.light .progress-text{
   color:#222;
 }
 
+.reveal-name {
+  font-size: 3rem;
+  font-weight: 700;
+  background: linear-gradient(90deg, #ff6ec7, #6a5af9, #00d2ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 0 15px rgba(255, 255, 255, 0.6);
+  animation: glowPulse 2s infinite alternate;
+  opacity: 0;
+  transition: opacity 1s ease-in-out;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1000;
+  pointer-events: none;
+}
+
+@keyframes glowPulse {
+  from { text-shadow: 0 0 10px rgba(255,255,255,0.5); }
+  to   { text-shadow: 0 0 25px rgba(255,255,255,0.9); }
+}
+
+.sparkle {
+  position: fixed;
+  width: 6px;
+  height: 6px;
+  background: radial-gradient(circle, #fff, transparent);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 999;
+}
+
+
+.shatter-overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(255,255,255,0.05);
+  backdrop-filter: blur(2px);
+  z-index: 999;
+  display: none;
+  overflow: hidden;
+}
+
+.shard {
+  position: absolute;
+  width: 100px; height: 100px;
+  background: rgba(255,255,255,0.2);
+  clip-path: polygon(0 0, 100% 0, 100% 100%);
+  opacity: 0.8;
+  animation: fall 1s forwards;
+}
+
+@keyframes fall {
+  to {
+    transform: translateY(200px) rotate(180deg);
+    opacity: 0;
+  }
+}
+
+
 </style>
 <!-- ✅ PWA manifest + theme color -->
 <link rel="manifest" href="manifest.json">
@@ -309,7 +386,22 @@ body.light .progress-text{
 <header>
 <h1>🚀 JEE Prep Tracker</h1>
 <p>Track your progress and master every chapter! 🌟</p>
-<button id="theme-toggle">🌙</button>
+<button id="theme-toggle" class="theme-orb">
+  <svg id="theme-icon" width="28" height="28" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+    <!-- Default: Dark theme → show Sun -->
+    <circle cx="12" cy="12" r="5" fill="white"/>
+    <g stroke="white" stroke-width="2">
+      <line x1="12" y1="1" x2="12" y2="4"/>
+      <line x1="12" y1="20" x2="12" y2="23"/>
+      <line x1="1" y1="12" x2="4" y2="12"/>
+      <line x1="20" y1="12" x2="23" y2="12"/>
+      <line x1="4.22" y1="4.22" x2="6.36" y2="6.36"/>
+      <line x1="17.64" y1="17.64" x2="19.78" y2="19.78"/>
+      <line x1="4.22" y1="19.78" x2="6.36" y2="17.64"/>
+      <line x1="17.64" y1="6.36" x2="19.78" y2="4.22"/>
+    </g>
+  </svg>
+</button>
 </header>
 
 <div class="container">
@@ -341,7 +433,8 @@ body.light .progress-text{
 
 <div id="checklist"></div>
 </div>
-
+<div id="name" class="reveal-name">Nishant Jha</div>
+<div id="shatter" class="shatter-overlay"></div>
 <footer>Made with <span>❤</span> by <strong>Nishant Jha</strong></footer>
 
 <script>
@@ -433,12 +526,41 @@ document.getElementById('reset-btn').addEventListener('click',()=>{
 if(confirm('Are you sure to reset all progress?')){saved={}; localStorage.setItem('jeeChecklist',JSON.stringify(saved)); render(searchInput.value);}
 });
 
-const themeToggle=document.getElementById('theme-toggle');
-themeToggle.addEventListener('click',()=>{
-document.body.classList.toggle('light');
-themeToggle.textContent=document.body.classList.contains('light')?'☀️':'🌙';
-render(searchInput.value);
+const themeToggle = document.getElementById('theme-toggle');
+const themeIcon = document.getElementById('theme-icon');
+
+const sunSVG = `
+<circle cx="12" cy="12" r="5" fill="white"/>
+<g stroke="white" stroke-width="2">
+  <line x1="12" y1="1" x2="12" y2="4"/>
+  <line x1="12" y1="20" x2="12" y2="23"/>
+  <line x1="1" y1="12" x2="4" y2="12"/>
+  <line x1="20" y1="12" x2="23" y2="12"/>
+  <line x1="4.22" y1="4.22" x2="6.36" y2="6.36"/>
+  <line x1="17.64" y1="17.64" x2="19.78" y2="19.78"/>
+  <line x1="4.22" y1="19.78" x2="6.36" y2="17.64"/>
+  <line x1="17.64" y1="6.36" x2="19.78" y2="4.22"/>
+</g>
+`;
+
+const moonSVG = `
+<path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" fill="black"/>
+`;
+
+themeToggle.addEventListener('click', () => {
+  document.body.classList.toggle('light');
+
+  if(document.body.classList.contains('light')){
+    // Light theme → show black moon
+    themeIcon.innerHTML = moonSVG;
+  } else {
+    // Dark theme → show white sun
+    themeIcon.innerHTML = sunSVG;
+  }
+
+  render(searchInput.value); // keep your checklist updated
 });
+
 
 render();
 </script>
@@ -451,5 +573,178 @@ if ("serviceWorker" in navigator) {
   });
 }
 </script>
+
+<script>
+const nameEl = document.getElementById('name');
+const shatterOverlay = document.getElementById('shatter');
+const header = document.querySelector('header');
+const footer = document.querySelector('footer');
+
+let typed = "";
+let headerClicks = 0;
+let footerTimer;
+
+function showName(duration=2000) {
+  nameEl.style.opacity = 1;
+  setTimeout(() => { nameEl.style.opacity = 0; }, duration);
+}
+
+
+function glitchReveal() {
+  let text = "Nishant Jha";
+  let letters = text.split("");
+  let glitchInterval = setInterval(() => {
+    nameEl.innerText = letters.map(l =>
+      Math.random() > 0.7 ? String.fromCharCode(65+Math.random()*26) : l
+    ).join("");
+  }, 50);
+  nameEl.style.opacity = 1;
+  setTimeout(() => {
+    clearInterval(glitchInterval);
+    nameEl.innerText = text;
+    setTimeout(() => { nameEl.style.opacity = 0; }, 2000);
+  }, 1500);
+}
+
+function typewriterReveal() {
+  let text = "Nishant Jha";
+  nameEl.innerText = "";
+  nameEl.style.opacity = 1;
+  let i = 0;
+  let interval = setInterval(() => {
+    nameEl.innerText += text[i];
+    burstSparkles();
+    i++;
+    if (i >= text.length) {
+      clearInterval(interval);
+      setTimeout(() => { nameEl.style.opacity = 0; }, 2000);
+    }
+  }, 150);
+}
+
+function burstSparkles() {
+  for (let i=0; i<40; i++) {
+    let s = document.createElement("div");
+    s.className = "sparkle";
+    document.body.appendChild(s);
+    s.style.top = window.innerHeight/2 + "px";
+    s.style.left = window.innerWidth/2 + "px";
+    let dx = (Math.random()-0.5) * 400;
+    let dy = (Math.random()-0.5) * 400;
+    s.animate([
+      { transform: "translate(0,0)", opacity: 1 },
+      { transform: `translate(${dx}px,${dy}px)`, opacity: 0 }
+    ], { duration: 1000, easing: "ease-out" });
+    setTimeout(() => s.remove(), 1000);
+  }
+}
+
+
+function crystalShatter() {
+  shatterOverlay.style.display = "block";
+  for (let i=0; i<20; i++) {
+    let shard = document.createElement("div");
+    shard.className = "shard";
+    shard.style.top = Math.random()*window.innerHeight + "px";
+    shard.style.left = Math.random()*window.innerWidth + "px";
+    shard.style.transform = `rotate(${Math.random()*360}deg)`;
+    shatterOverlay.appendChild(shard);
+    setTimeout(() => shard.remove(), 1200);
+  }
+  showName(2000);
+  setTimeout(() => { shatterOverlay.style.display = "none"; }, 1200);
+}
+
+
+function particleSwirl() {
+  let canvas = document.createElement("canvas");
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  canvas.style.position = "fixed";
+  canvas.style.top = 0;
+  canvas.style.left = 0;
+  canvas.style.zIndex = 998;
+  document.body.appendChild(canvas);
+
+  let ctx = canvas.getContext("2d");
+  let particles = [];
+  for (let i=0; i<150; i++) {
+    particles.push({
+      x: Math.random()*canvas.width,
+      y: Math.random()*canvas.height,
+      dx: (Math.random()-0.5)*2,
+      dy: (Math.random()-0.5)*2
+    });
+  }
+
+  function animate() {
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    particles.forEach(p => {
+      ctx.fillStyle = "#fff";
+      ctx.fillRect(p.x, p.y, 2, 2);
+      p.x += p.dx; p.y += p.dy;
+    });
+  }
+
+  let anim = setInterval(animate, 30);
+  setTimeout(() => {
+    clearInterval(anim);
+    canvas.remove();
+    showName(2000);
+  }, 2000);
+}
+
+
+function runeMorph() {
+  let runes = ["ᚠ","ᚢ","ᚦ","ᚨ","ᚱ","ᚲ","ᚷ","ᚹ"];
+  let text = "Nishant Jha";
+  let letters = text.split("");
+  nameEl.innerText = "";
+  nameEl.style.opacity = 1;
+  let i = 0;
+  let interval = setInterval(() => {
+    nameEl.innerText = letters.map((l, idx) =>
+      idx <= i ? l : runes[Math.floor(Math.random()*runes.length)]
+    ).join("");
+    i++;
+    if (i > letters.length) {
+      clearInterval(interval);
+      setTimeout(() => { nameEl.style.opacity = 0; }, 2000);
+    }
+  }, 200);
+}
+
+
+window.addEventListener("keydown", (e) => {
+  typed += e.key.toLowerCase();
+  if (typed.endsWith("nishant")) { glitchReveal(); typed=""; }
+  if (typed.endsWith("particle")) { particleSwirl(); typed=""; }
+  if (typed.endsWith("rune")) { runeMorph(); typed=""; }
+
+});
+
+// Instead of listening on the whole header
+const prepGuideTitle = document.querySelector('header h1');
+
+prepGuideTitle.addEventListener("click", () => {
+    headerClicks++;
+    if (headerClicks === 25) {
+        typewriterReveal();
+        headerClicks = 0;
+    }
+});
+
+
+
+
+
+footer.addEventListener("mousedown", () => {
+  footerTimer = setTimeout(() => { crystalShatter(); }, 1000);
+});
+footer.addEventListener("mouseup", () => {
+  clearTimeout(footerTimer);
+});
+</script>
+
 </body>
 </html>
