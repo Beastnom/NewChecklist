@@ -1,916 +1,609 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>🚀 JEE Prep Tracker</title>
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>🚀 JEE Prep Tracker</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#000000">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
 
+    :root{
+      --glass-dark: rgba(255,255,255,0.08);
+      --glass-light: rgba(255,255,255,0.25);
+      --muted: #666;
+      --highlight: #ffd54f;
+      --dark-bg:#000;
+      --dark-text:#fff;
+      --light-bg:#fff8f8;
+      --light-text:#222;
+      --light-glow: rgba(255,182,193,0.35);
+    }
 
-:root{
-  --glass-dark: rgba(255,255,255,0.08);
-  --glass-light: rgba(255,255,255,0.25);
-  --muted: #666;
-  --highlight: #ffd54f;
-  --dark-bg:#000;
-  --dark-text:#fff;
-  --light-bg:#fff8f8;
-  --light-text:#222;
-  --light-glow: rgba(255,182,193,0.35);
-}
+    *{box-sizing:border-box;margin:0;padding:0;transition: all 0.3s ease;}
+    body {
+      font-family:'Poppins',sans-serif;
+      min-height:100vh;
+      overflow-x:hidden;
+      position:relative;
+      background:var(--dark-bg);
+      color:var(--dark-text);
+    }
 
+    body::before, body::after{
+      content:"";
+      position:fixed;
+      width:200%;
+      height:200%;
+      top:-50%;
+      left:-50%;
+      border-radius:50%;
+      z-index:-1;
+      filter: blur(120px);
+    }
+    body::before{
+      background: radial-gradient(circle at 20% 30%, rgba(255,0,150,0.4), transparent 40%);
+      animation: blob1 25s infinite linear alternate;
+    }
+    body::after{
+      background: radial-gradient(circle at 80% 70%, rgba(0,255,255,0.3), transparent 50%);
+      animation: blob2 30s infinite linear alternate-reverse;
+    }
+    @keyframes blob1{
+      0% {transform: translate(0,0) rotate(0deg);}
+      50% {transform: translate(20vw,10vh) rotate(180deg);}
+      100% {transform: translate(0,0) rotate(360deg);}
+    }
+    @keyframes blob2{
+      0% {transform: translate(0,0) rotate(0deg);}
+      50% {transform: translate(-20vw,-10vh) rotate(180deg);}
+      100% {transform: translate(0,0) rotate(360deg);}
+    }
 
-*{box-sizing:border-box;margin:0;padding:0;transition: all 0.3s ease;}
-body {
-  font-family:'Poppins',sans-serif;
-  min-height:100vh;
-  overflow-x:hidden;
-  position:relative;
-  background:var(--dark-bg);
-  color:var(--dark-text);
-}
+    header{
+      text-align:center; padding:30px 16px 8px; position:relative;
+    }
+    header h1{
+      font-size:2.5rem; font-weight:700;
+      background: linear-gradient(90deg,#00f260,#0575e6);
+      -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;
+      transition: all 0.4s ease;
+      cursor: pointer;
+    }
+    header h1:hover{ transform: scale(1.08) rotate(-2deg); }
+    header p{ margin-top:8px; opacity:0.85; font-size:1.05rem; }
 
+    .theme-orb {
+      position: absolute; top: 24px; right: 24px;
+      width: 50px; height: 50px; border-radius: 50%;
+      background: transparent; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      box-shadow: 0 0 8px rgba(255,255,255,0.2);
+    }
+    .theme-orb:hover { transform: scale(1.15); box-shadow: 0 0 16px rgba(255,255,255,0.4); }
+    #theme-icon { transition: all 0.5s ease; }
 
-body::before, body::after{
-  content:"";
-  position:fixed;
-  width:200%;
-  height:200%;
-  top:-50%;
-  left:-50%;
-  border-radius:50%;
-  z-index:-1;
-  filter: blur(120px);
-}
-body::before{
-  background: radial-gradient(circle at 20% 30%, rgba(255,0,150,0.4), transparent 40%);
-  animation: blob1 25s infinite linear alternate;
-}
-body::after{
-  background: radial-gradient(circle at 80% 70%, rgba(0,255,255,0.3), transparent 50%);
-  animation: blob2 30s infinite linear alternate-reverse;
-}
-@keyframes blob1{
-  0% {transform: translate(0,0) rotate(0deg);}
-  50% {transform: translate(20vw,10vh) rotate(180deg);}
-  100% {transform: translate(0,0) rotate(360deg);}
-}
-@keyframes blob2{
-  0% {transform: translate(0,0) rotate(0deg);}
-  50% {transform: translate(-20vw,-10vh) rotate(180deg);}
-  100% {transform: translate(0,0) rotate(360deg);}
-}
+    .container{ max-width:980px; margin:20px auto; padding:10px; }
 
+    .search-box{ text-align:center; margin-bottom:18px; }
+    .search-box input{
+      width:86%; max-width:500px; padding:14px 20px; border-radius:16px; border:none;
+      outline:none; font-size:1rem; background: rgba(255,255,255,0.08); color:#fff;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.25); backdrop-filter: blur(8px);
+      transition: all 0.3s ease, box-shadow 0.4s ease, transform 0.3s ease;
+      border: 1px solid rgba(255,255,255,0.12);
+    }
+    .search-box input::placeholder{ color:#dfefff; opacity:0.6; transition: opacity 0.3s ease; }
+    .search-box input:hover{
+      background: rgba(255,255,255,0.12);
+      box-shadow: 0 8px 25px rgba(0,255,255,0.3),0 0 15px rgba(255,0,150,0.2);
+      transform: translateY(-5px) scale(1.02);
+    }
+    .search-box input:focus{
+      background: rgba(255,255,255,0.18); transform: scale(1.02);
+      box-shadow: 0 10px 30px rgba(0,255,255,0.5),0 0 20px rgba(255,0,150,0.3);
+      border:1px solid #00f260;
+    }
+    .search-box input:focus::placeholder{ opacity:0.4; }
 
-header{
-  text-align:center; padding:30px 16px 8px; position:relative;
-}
-header h1{
-  font-size:2.5rem; font-weight:700;
-  background: linear-gradient(90deg,#00f260,#0575e6);
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
-  transition: all 0.4s ease;
-  cursor: pointer;
-}
-header h1:hover{
-  transform: scale(1.08) rotate(-2deg);
-}
-header p{ margin-top:8px; opacity:0.85; font-size:1.05rem; }
+    .controls{
+      text-align:center; margin-bottom:18px; display:flex; justify-content:center; gap:12px; flex-wrap:wrap;
+    }
+    .toggle-btn, #reset-btn{
+      padding:10px 16px; border-radius:10px; border:0; font-weight:600; cursor:pointer;
+      box-shadow:0 6px 18px rgba(0,0,0,0.18); transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .toggle-btn{ background: linear-gradient(90deg,#36d1dc,#5b86e5); color:#fff; }
+    .toggle-btn:hover{ transform:scale(1.05); box-shadow:0 8px 25px rgba(0,0,0,0.35); }
+    #reset-btn{ background: linear-gradient(90deg,#ff4e50,#f9d423); color:#fff; }
+    #reset-btn:hover{ transform:scale(1.05); box-shadow:0 8px 25px rgba(0,0,0,0.35); }
 
+    .card{
+      background: var(--glass-dark); border-radius:16px; padding:20px; margin-bottom:20px;
+      backdrop-filter: blur(12px); box-shadow: 0 8px 30px rgba(0,0,0,0.28);
+      transition: transform .3s ease, box-shadow .3s ease, background 0.3s ease;
+    }
+    .card:hover{
+      transform: translateY(-5px) scale(1.02);
+      box-shadow:0 0 30px rgba(0,255,255,0.4),0 0 50px rgba(255,0,255,0.4);
+    }
 
-.theme-orb {
-  position: absolute;
-  top: 24px;
-  right: 24px;
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  background: transparent;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  box-shadow: 0 0 8px rgba(255,255,255,0.2);
-}
+    h2{ color:#fff; margin-bottom:10px; font-size:1.25rem;}
+    h3{ color:#fff; margin:12px 0 6px 0; font-size:1rem; }
 
-.theme-orb:hover {
-  transform: scale(1.15);
-  box-shadow: 0 0 16px rgba(255,255,255,0.4);
-}
+    .progress-container{
+      background: rgba(255,255,255,0.12); border-radius:20px; height:28px; position:relative; overflow:hidden;
+    }
+    .progress-bar{
+      height:100%; width:0%;
+      background: linear-gradient(90deg,#00f260,#0575e6);
+      transition: width 1.5s ease-in-out; border-radius: 20px; position: relative; overflow: hidden;
+    }
+    .progress-bar::after{
+      content: ""; position: absolute; top:0; left:0; width:100%; height:100%;
+      background: linear-gradient(270deg, rgba(255,255,255,0.3), rgba(255,255,255,0.1), rgba(255,255,255,0.3));
+      opacity: 0.6; animation: shine 2.5s linear infinite; border-radius: 20px;
+    }
+    @keyframes shine { 0%{ transform: translateX(-100%);} 100%{ transform: translateX(100%);} }
 
-#theme-icon {
-  transition: all 0.5s ease;
-}
+    body.light .progress-bar{ background: linear-gradient(90deg,#ffb6c1,#ffc0cb); }
+    body.light .progress-bar::after{
+      background: linear-gradient(270deg, rgba(255,255,255,0.4), rgba(255,255,255,0.1), rgba(255,255,255,0.4));
+    }
 
+    .progress-text{
+      position:absolute; left:50%; top:0; transform:translateX(-50%);
+      display:flex; align-items:center; justify-content:center;
+      height:100%; font-weight:700; color:#fff; text-shadow:0 2px 8px rgba(0,0,0,0.45);
+    }
 
+    .chapter{
+      display:flex; align-items:center; gap:12px; padding:8px 10px; border-radius:10px;
+      margin:6px 0; transition: all 0.25s ease;
+    }
+    .chapter:hover{ background: rgba(255,255,255,0.05); transform: scale(1.02); }
 
-.container{ max-width:980px; margin:20px auto; padding:10px; }
+    .checkbox-wrapper{ width:22px; height:22px; position:relative; flex-shrink:0; }
+    .checkbox-wrapper input{ position:absolute; inset:0; opacity:0; z-index:2; cursor:pointer; }
+    .checkmark{
+      position:absolute; inset:0; border-radius:6px; background: rgba(255,255,255,0.16);
+      display:block; transition: all .2s ease;
+    }
+    .checkbox-wrapper input:checked ~ .checkmark{
+      background: linear-gradient(135deg,#00f260,#0575e6); transform: scale(1.02);
+      box-shadow:0 6px 18px rgba(0,0,0,0.28) inset;
+    }
+    .checkbox-wrapper .checkmark:after{
+      content:""; position:absolute; left:6px; top:3px; width:5px; height:10px;
+      border: solid white; border-width:0 2px 2px 0; transform: rotate(45deg); display:none;
+    }
+    .checkbox-wrapper input:checked ~ .checkmark:after{ display:block; }
 
+    .label-text{ color:#f3f6fb; font-size:0.97rem; flex:1; user-select:none; }
+    .label-text.completed{ text-decoration:line-through; color:var(--muted); }
+    .highlight{ background: var(--highlight); color:#000; padding:0 4px; border-radius:4px; }
 
-.search-box{
-  text-align:center; margin-bottom:18px;
-}
-.search-box input{
-  width:86%; max-width:500px; padding:14px 20px;
-  border-radius:16px; border:none; outline:none;
-  font-size:1rem;
-  background: rgba(255,255,255,0.08);
-  color:#fff;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.25);
-  backdrop-filter: blur(8px);
-  transition: all 0.3s ease, box-shadow 0.4s ease, transform 0.3s ease;
-  border: 1px solid rgba(255,255,255,0.12);
-}
-.search-box input::placeholder{
-  color:#dfefff; opacity:0.6; transition: opacity 0.3s ease;
-}
-.search-box input:hover{
-  background: rgba(255,255,255,0.12);
-  box-shadow: 0 8px 25px rgba(0,255,255,0.3),0 0 15px rgba(255,0,150,0.2);
-   transform: translateY(-5px) scale(1.02);
-}
-.search-box input:focus{
-  background: rgba(255,255,255,0.18);
-  transform: scale(1.02);
-  box-shadow: 0 10px 30px rgba(0,255,255,0.5),0 0 20px rgba(255,0,150,0.3);
-  border:1px solid #00f260;
-}
-.search-box input:focus::placeholder{ opacity:0.4; }
+    .weight-badge {
+      font-size:0.82rem; color: #e3f9ff; margin-left:8px; opacity:0.9;
+      background: rgba(255,255,255,0.04); padding:2px 6px; border-radius:6px;
+    }
+    body.light .weight-badge { color:#222; background: rgba(255,255,255,0.7); opacity:0.95; }
 
-.controls{
-  text-align:center; margin-bottom:18px; display:flex;
-  justify-content:center; gap:12px; flex-wrap:wrap;
-}
-.toggle-btn, #reset-btn{
-  padding:10px 16px; border-radius:10px; border:0;
-  font-weight:600; cursor:pointer;
-  box-shadow:0 6px 18px rgba(0,0,0,0.18);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
+    footer{ text-align:center; padding:14px 10px; color:#eaeef9; font-size:0.95rem; margin-top:20px; opacity:0.95; }
+    footer span{ color:#ff6b6b; margin:0 6px; }
 
-.toggle-btn{
-  background: linear-gradient(90deg,#36d1dc,#5b86e5); color:#fff;
-}
+    @media(max-width:640px){
+      header h1{ font-size:1.8rem; }
+      .search-box input{ width:92%; }
+      .container{ padding:12px; }
+    }
 
+    body.light{
+      background: var(--light-bg); color: var(--light-text);
+    }
+    body.light h2, body.light h3, body.light .label-text, body.light .progress-text{ color: var(--light-text); }
+    body.light .card{ background: var(--glass-light); box-shadow:0 8px 30px var(--light-glow); }
+    body.light .checkbox-wrapper .checkmark{ background: rgba(0,0,0,0.1); }
+    body.light .checkbox-wrapper input:checked ~ .checkmark{
+      box-shadow:0 6px 18px rgba(255,182,193,0.4) inset; background:linear-gradient(135deg,#ffb6c1,#ffc0cb);
+    }
+    body.light .chapter:hover{ background: rgba(255,182,193,0.15); }
+    body.light .search-box input{ color:#222; background: rgba(255,255,255,0.25); border:1px solid rgba(0,0,0,0.15); }
+    body.light .search-box input::placeholder{ color:#555; opacity:0.6; }
+    body.light .progress-container{ background: rgba(255,182,193,0.2); }
+    body.light footer{ color:#222; }
+    body.light .progress-text{ color:#222; }
 
-.toggle-btn:hover{ transform:scale(1.05); box-shadow:0 8px 25px rgba(0,0,0,0.35); }
-#reset-btn{
-  background: linear-gradient(90deg,#ff4e50,#f9d423); color:#fff;
-}
-#reset-btn:hover{ transform:scale(1.05); box-shadow:0 8px 25px rgba(0,0,0,0.35);}
+    .reveal-name {
+      font-size: 3rem; font-weight: 700;
+      background: linear-gradient(90deg, #ff6ec7, #6a5af9, #00d2ff);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      text-shadow: 0 0 15px rgba(255, 255, 255, 0.6);
+      animation: glowPulse 2s infinite alternate; opacity: 0;
+      transition: opacity 1s ease-in-out;
+      position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+      z-index: 1000; pointer-events: none;
+    }
+    @keyframes glowPulse { from { text-shadow: 0 0 10px rgba(255,255,255,0.5); } to { text-shadow: 0 0 25px rgba(255,255,255,0.9); } }
 
+    .sparkle { position: fixed; width: 6px; height: 6px; background: radial-gradient(circle, #fff, transparent); border-radius: 50%; pointer-events: none; z-index: 999; }
 
-.card{
-  background: var(--glass-dark);
-  border-radius:16px;
-  padding:20px;
-  margin-bottom:20px;
-  backdrop-filter: blur(12px);
-  box-shadow: 0 8px 30px rgba(0,0,0,0.28);
-  transition: transform .3s ease, box-shadow .3s ease, background 0.3s ease;
-}
-.card:hover{
-  transform: translateY(-5px) scale(1.02);
-  box-shadow:0 0 30px rgba(0,255,255,0.4),0 0 50px rgba(255,0,255,0.4);
-}
-
-
-h2{ color:#fff; margin-bottom:10px; font-size:1.25rem;}
-h3{ color:#fff; margin:12px 0 6px 0; font-size:1rem; }
-
-
-.progress-container{
-  background: rgba(255,255,255,0.12);
-  border-radius:20px;
-  height:28px; position:relative; overflow:hidden;
-}
-.progress-bar{
-  height:100%; 
-  width:0%;
-  background: linear-gradient(90deg,#00f260,#0575e6);
-  transition: width 1.5s ease-in-out;
-  border-radius: 20px;
-  position: relative;
-  overflow: hidden;
-}
-
-.progress-bar::after{
-  content: "";
-  position: absolute;
-  top:0;
-  left:0;
-  width:100%;
-  height:100%;
-  background: linear-gradient(270deg, rgba(255,255,255,0.3), rgba(255,255,255,0.1), rgba(255,255,255,0.3));
-  opacity: 0.6;
-  animation: shine 2.5s linear infinite;
-  border-radius: 20px;
-}
-
-@keyframes shine {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(100%); }
-}
-
-
-body.light .progress-bar{
-  background: linear-gradient(90deg,#ffb6c1,#ffc0cb);
-}
-
-body.light .progress-bar::after{
-  background: linear-gradient(270deg, rgba(255,255,255,0.4), rgba(255,255,255,0.1), rgba(255,255,255,0.4));
-}
-
-@keyframes shimmer{
-  0% {background-position: -200% 0;}
-  100% {background-position: 200% 0;}
-}
-.progress-text{
-  position:absolute; left:50%; top:0; transform:translateX(-50%);
-  display:flex; align-items:center; justify-content:center;
-  height:100%; font-weight:700; color:#fff; text-shadow:0 2px 8px rgba(0,0,0,0.45);
-}
-
-
-.chapter{
-  display:flex; align-items:center;
-  gap:12px; padding:8px 10px; border-radius:10px;
-  margin:6px 0; transition: all 0.25s ease;
-}
-.chapter:hover{
-  background: rgba(255,255,255,0.05);
-  transform: scale(1.02);
-}
-
-
-.checkbox-wrapper{
-  width:22px; height:22px; position:relative; flex-shrink:0;
-}
-.checkbox-wrapper input{
-  position:absolute; inset:0; opacity:0; z-index:2; cursor:pointer;
-}
-.checkmark{
-  position:absolute; inset:0; border-radius:6px; background: rgba(255,255,255,0.16);
-  display:block; transition: all .2s ease;
-}
-.checkbox-wrapper input:checked ~ .checkmark{
-  background: linear-gradient(135deg,#00f260,#0575e6);
-  transform: scale(1.02);
-  box-shadow:0 6px 18px rgba(0,0,0,0.28) inset;
-}
-.checkbox-wrapper .checkmark:after{
-  content:""; position:absolute; left:6px; top:3px; width:5px; height:10px;
-  border: solid white; border-width:0 2px 2px 0; transform: rotate(45deg);
-  display:none;
-}
-.checkbox-wrapper input:checked ~ .checkmark:after{ display:block;}
-
-
-.label-text{
-  color:#f3f6fb; font-size:0.97rem; flex:1; user-select:none;
-}
-.label-text.completed{ text-decoration:line-through; color:var(--muted); }
-.highlight{ background: var(--highlight); color:#000; padding:0 4px; border-radius:4px; }
-
-.weight-badge { font-size:0.82rem; color: #e3f9ff; margin-left:8px; opacity:0.9; background: rgba(255,255,255,0.04); padding:2px 6px; border-radius:6px; }
-
-/* Muted weight for light theme */
-body.light .weight-badge { color:#222; background: rgba(255,255,255,0.7); opacity:0.95; }
-
-footer{
-  text-align:center; padding:14px 10px; color:#eaeef9; font-size:0.95rem;
-  margin-top:20px; opacity:0.95;
-}
-footer span{ color:#ff6b6b; margin:0 6px; }
-
-
-@media(max-width:640px){
-  header h1{ font-size:1.8rem; }
-  .search-box input{ width:92%; }
-  .container{ padding:12px; }
-}
-
-
-body.light{
-  background: var(--light-bg);
-  color: var(--light-text);
-}
-body.light h2, body.light h3, body.light .label-text, body.light .progress-text{
-  color: var(--light-text);
-}
-body.light .card{ background: var(--glass-light); box-shadow:0 8px 30px var(--light-glow);}
-body.light .checkbox-wrapper .checkmark{ background: rgba(0,0,0,0.1);}
-body.light .checkbox-wrapper input:checked ~ .checkmark{ box-shadow:0 6px 18px rgba(255,182,193,0.4) inset; background:linear-gradient(135deg,#ffb6c1,#ffc0cb);}
-body.light .chapter:hover{ background: rgba(255,182,193,0.15);}
-body.light .search-box input{ color:#222; background: rgba(255,255,255,0.25); border:1px solid rgba(0,0,0,0.15);}
-body.light .search-box input::placeholder{ color:#555; opacity:0.6;}
-body.light .search-box input:hover{ box-shadow:0 8px 25px rgba(255,182,193,0.4),0 0 15px rgba(255,182,193,0.3);}
-body.light .search-box input:focus{ box-shadow:0 10px 30px rgba(255,182,193,0.5),0 0 20px rgba(255,182,193,0.3);}
-body.light .progress-container{
-  background: rgba(255,182,193,0.2); 
-}
-body.light footer{
-  color:#222; 
-}
-body.light .progress-text{
-  color:#222;
-}
-
-.reveal-name {
-  font-size: 3rem;
-  font-weight: 700;
-  background: linear-gradient(90deg, #ff6ec7, #6a5af9, #00d2ff);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  text-shadow: 0 0 15px rgba(255, 255, 255, 0.6);
-  animation: glowPulse 2s infinite alternate;
-  opacity: 0;
-  transition: opacity 1s ease-in-out;
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 1000;
-  pointer-events: none;
-}
-
-@keyframes glowPulse {
-  from { text-shadow: 0 0 10px rgba(255,255,255,0.5); }
-  to   { text-shadow: 0 0 25px rgba(255,255,255,0.9); }
-}
-
-.sparkle {
-  position: fixed;
-  width: 6px;
-  height: 6px;
-  background: radial-gradient(circle, #fff, transparent);
-  border-radius: 50%;
-  pointer-events: none;
-  z-index: 999;
-}
-
-
-.shatter-overlay {
-  position: fixed;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  background: rgba(255,255,255,0.05);
-  backdrop-filter: blur(2px);
-  z-index: 999;
-  display: none;
-  overflow: hidden;
-}
-
-.shard {
-  position: absolute;
-  width: 100px; height: 100px;
-  background: rgba(255,255,255,0.2);
-  clip-path: polygon(0 0, 100% 0, 100% 100%);
-  opacity: 0.8;
-  animation: fall 1s forwards;
-}
-
-@keyframes fall {
-  to {
-    transform: translateY(200px) rotate(180deg);
-    opacity: 0;
-  }
-}
-</style>
-<!-- ✅ PWA manifest + theme color -->
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#000000">
+    .shatter-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.05); backdrop-filter: blur(2px); z-index: 999; display: none; overflow: hidden; }
+    .shard { position: absolute; width: 100px; height: 100px; background: rgba(255,255,255,0.2); clip-path: polygon(0 0, 100% 0, 100% 100%); opacity: 0.8; animation: fall 1s forwards; }
+    @keyframes fall { to { transform: translateY(200px) rotate(180deg); opacity: 0; } }
+  </style>
 </head>
 <body>
-<header>
-<h1>🚀 JEE Prep Tracker</h1>
-<p>Track your progress and master every chapter! 🌟</p>
-<button id="theme-toggle" class="theme-orb">
-  <svg id="theme-icon" width="28" height="28" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-    <!-- Default: Dark theme → show Sun -->
-    <circle cx="12" cy="12" r="5" fill="white"/>
-    <g stroke="white" stroke-width="2">
-      <line x1="12" y1="1" x2="12" y2="4"/>
-      <line x1="12" y1="20" x2="12" y2="23"/>
-      <line x1="1" y1="12" x2="4" y2="12"/>
-      <line x1="20" y1="12" x2="23" y2="12"/>
-      <line x1="4.22" y1="4.22" x2="6.36" y2="6.36"/>
-      <line x1="17.64" y1="17.64" x2="19.78" y2="19.78"/>
-      <line x1="4.22" y1="19.78" x2="6.36" y2="17.64"/>
-      <line x1="17.64" y1="6.36" x2="19.78" y2="4.22"/>
-    </g>
-  </svg>
-</button>
-</header>
+  <header>
+    <h1>🚀 JEE Prep Tracker</h1>
+    <p>Track your progress and master every chapter! 🌟</p>
+    <button id="theme-toggle" class="theme-orb">
+      <svg id="theme-icon" width="28" height="28" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="12" r="5" fill="white"/>
+        <g stroke="white" stroke-width="2">
+          <line x1="12" y1="1" x2="12" y2="4"/>
+          <line x1="12" y1="20" x2="12" y2="23"/>
+          <line x1="1" y1="12" x2="4" y2="12"/>
+          <line x1="20" y1="12" x2="23" y2="12"/>
+          <line x1="4.22" y1="4.22" x2="6.36" y2="6.36"/>
+          <line x1="17.64" y1="17.64" x2="19.78" y2="19.78"/>
+          <line x1="4.22" y1="19.78" x2="6.36" y2="17.64"/>
+          <line x1="17.64" y1="6.36" x2="19.78" y2="4.22"/>
+        </g>
+      </svg>
+    </button>
+  </header>
 
-<div class="container">
-<div class="search-box">
-<input id="search" placeholder="🔍 Search chapters (e.g. Optics, Integrals)..." />
-</div>
-<div class="controls">
-<button id="toggle-sort" class="toggle-btn">📌 Show Pending First</button>
-<button id="sort-weight" class="toggle-btn">🔥 Sort by Weightage (High → Low)</button>
-<button id="reset-btn">Reset Progress</button>
-</div>
+  <div class="container">
+    <div class="search-box">
+      <input id="search" placeholder="🔍 Search chapters (e.g. Optics, Integrals)..." />
+    </div>
 
-<div class="card">
-<h2>Overall Progress</h2>
-<div class="progress-container">
-<div id="progress-bar" class="progress-bar"></div>
-<div id="progress-text" class="progress-text">0%</div>
-</div>
-</div>
+    <div class="controls">
+      <button id="toggle-sort" class="toggle-btn">📌 Show Pending First</button>
+      <button id="sort-weight" class="toggle-btn">🔥 Sort by Weightage (High → Low)</button>
+      <button id="reset-btn">Reset Progress</button>
+    </div>
 
-<div class="card">
-<h2>Subject-wise Progress</h2>
-<h3>📓 Physics</h3>
-<div class="progress-container"><div id="physics-bar" class="progress-bar"></div><div id="physics-text" class="progress-text">0%</div></div>
-<h3>🧪 Chemistry</h3>
-<div class="progress-container"><div id="chemistry-bar" class="progress-bar"></div><div id="chemistry-text" class="progress-text">0%</div></div>
-<h3>📐 Mathematics</h3>
-<div class="progress-container"><div id="math-bar" class="progress-bar"></div><div id="math-text" class="progress-text">0%</div></div>
-</div>
+    <div class="card">
+      <h2>Overall Progress</h2>
+      <div class="progress-container">
+        <div id="progress-bar" class="progress-bar"></div>
+        <div id="progress-text" class="progress-text">0%</div>
+      </div>
+    </div>
 
-<div id="checklist"></div>
-</div>
-<div id="name" class="reveal-name">Nishant Jha</div>
-<div id="shatter" class="shatter-overlay"></div>
-<footer>Made with <span>❤</span> by <strong>Nishant Jha</strong></footer>
+    <div class="card">
+      <h2>Subject-wise Progress</h2>
+      <h3>📓 Physics</h3>
+      <div class="progress-container"><div id="physics-bar" class="progress-bar"></div><div id="physics-text" class="progress-text">0%</div></div>
+      <h3>🧪 Chemistry</h3>
+      <div class="progress-container"><div id="chemistry-bar" class="progress-bar"></div><div id="chemistry-text" class="progress-text">0%</div></div>
+      <h3>📐 Mathematics</h3>
+      <div class="progress-container"><div id="math-bar" class="progress-bar"></div><div id="math-text" class="progress-text">0%</div></div>
+    </div>
 
-<script>
-/* ============================
-   Icons + Original data (unchanged)
-   ============================ */
-const icons = {
-"Electric Charges and Fields":"⚡","Electrostatic Potential and Capacitance":"🔋","Current Electricity":"💡","Moving Charges and Magnetism":"🧲","Magnetism and Matter":"🧭","Ray Optics and Optical Instruments":"🔭",
-"Wave Optics":"🌈","Oscillations":"🎵","Waves":"📡","Thermodynamics":"🔥","Gravitation":"🌍","Atoms":"⚛","Electromagnetic Waves":"(﹙˓  ˒﹚)",
-"Units and Measurements":"📏","Motion in a Plane":"🪂","Some Basic Concepts of Chemistry":"🧪","Structure of Atom":"⚛️","Dual Nature of Radiation and Matter":"💥",
-"Chemical Bonding and Molecular Structure":"🔗","Equilibrium":"⚖️","Hydrocarbons": "⛽","Solid State":"🧊","Motion in a Straight Line":"➡️","Laws of Motion":"🔨","Work, Energy, and Power":"💣","System of Particles and Rotational Motion":"🌀",
-"Solutions":"🥤","Electrochemistry":"🔌","Polymers":"🧵","Biomolecules":"🧬","Relations & Functions": "🔗","Alcohols, Phenols & Ethers": "🍷","Organic Chemistry Basics": "📝","Mechanical Properties of Solids":"💎","Mechanical Properties of Fluids":"💧",
-"Inverse Trigonometric Functions":"📐","Matrices":"🧮","Determinants":"🔢","Probability":"🎲","Nuclei": "☢️","System of Particles & Rotational Motion": "⚾","Thermal Properties of Matter":"🕯️",
-"Statistics":"📊","Sequences and Series":"🖇️","Limits and Derivatives":"📈","Differential Equations":"","Trigonometric Functions":"📐","Electromagnetic Induction":"〰️","Classification of Elements & Periodicity":"📄",
-"Vector Algebra":"➡️","Kinetic Theory of Gases":"💨","Semiconductor Electronics":"💻","Alternating Current":"🔁","3D Geometry": "🏗️","Integral Calculus": "","The Environmental Chemistry": "☘️","States of Matter":"🧊💧☁️"
-};
+    <div id="checklist"></div>
+  </div>
 
-const data = {
-Physics:{11:["Units and Measurements","Motion in a Straight Line","Motion in a Plane","Laws of Motion","Work, Energy, and Power","System of Particles and Rotational Motion","Gravitation","Mechanical Properties of Solids","Mechanical Properties of Fluids","Thermal Properties of Matter","Thermodynamics","Kinetic Theory of Gases","Oscillations","Waves"],12:["Electric Charges and Fields","Electrostatic Potential and Capacitance","Current Electricity","Moving Charges and Magnetism","Magnetism and Matter","Electromagnetic Induction","Alternating Current","Electromagnetic Waves","Ray Optics and Optical Instruments","Wave Optics","Dual Nature of Radiation and Matter","Atoms","Nuclei","Semiconductor Electronics"]},
-Chemistry:{11:["Some Basic Concepts of Chemistry","Structure of Atom","Classification of Elements & Periodicity","Chemical Bonding and Molecular Structure","States of Matter","Thermodynamics","Equilibrium","The Redox Reaction","The Hydrogen","The s-Block Element (Alkali & Alkaline earth)","The p-Block Element (Group 13 & 14)","The Organic Chemistry – Some Basic Principles and Techniques","Hydrocarbons","The Environmental Chemistry"],12:["Solid State","Solutions","Electrochemistry","Chemical Kinetics","Surface Chemistry","The p-Block Element (Group 15, 16, 17, 18)","The d-Block Element (Transition)","The f-Block Element (Lanthanides, Actinides)","The Coordination Compounds","The Haloalkanes and Haloarenes","The Alcohols, Phenols, and Ethers","The Aldehydes, Ketones, and Carboxylic Acids","The Amines","The Biomolecules","The Polymers","The Chemistry in Everyday Life"]},
-Mathematics:{11:["Sets, Relations and Functions","Trigonometric Functions","Principle of Mathematical Induction","Complex Numbers and Quadratic Equations","Permutations and Combinations","Binomial Theorem","Sequences and Series","Straight Lines","Conic Sections","Introduction to 3D Geometry","Limits and Derivatives","Mathematical Reasoning","Statistics","Probability"],12:["Relations and Functions","Inverse Trigonometric Functions","Matrices","Determinants","Continuity and Differentiability","Applications of Derivatives","Integrals","Applications of Integrals","Differential Equations","Vector Algebra","Three Dimensional Geometry","Linear Programming","Probability"]}
-};
+  <div id="name" class="reveal-name">Nishant Jha</div>
+  <div id="shatter" class="shatter-overlay"></div>
+  <footer>Made with <span>❤</span> by <strong>Nishant Jha</strong></footer>
 
-/* ============================
-   NEW: weightageData (JEE Main 2025-based estimates)
-   - Percentages approximate, derived from JEE Main past papers & trend analyses.
-   - Common granular values: 3.3% (one question), 6.6% (two q), 9.9% (three q), 15.9% (top clusters).
-   - Edit any value below to tune your site.
-   ============================ */
-const weightageData = {
-  /* PHYSICS 11 */
-  "Units and Measurements": 3.3,
-  "Motion in a Straight Line": 3.3,
-  "Motion in a Plane": 6.6,
-  "Laws of Motion": 3.3,
-  "Work, Energy, and Power": 3.3,
-  "System of Particles and Rotational Motion": 6.6,
-  "Gravitation": 3.3,
-  "Mechanical Properties of Solids": 3.3,
-  "Mechanical Properties of Fluids": 3.3,
-  "Thermal Properties of Matter": 3.3,
-  "Thermodynamics": 6.6,
-  "Kinetic Theory of Gases": 3.3,
-  "Oscillations": 3.3,
-  "Waves": 3.3,
+  <script>
+    const icons = {
+      "Electric Charges and Fields":"⚡","Electrostatic Potential and Capacitance":"🔋","Current Electricity":"💡",
+      "Moving Charges and Magnetism":"🧲","Magnetism and Matter":"🧭","Ray Optics and Optical Instruments":"🔭",
+      "Wave Optics":"🌈","Oscillations":"🎵","Waves":"📡","Thermodynamics":"🔥","Gravitation":"🌍","Atoms":"⚛",
+      "Electromagnetic Waves":"(﹙˓  ˒﹚)","Units and Measurements":"📏","Motion in a Plane":"🪂",
+      "Some Basic Concepts of Chemistry":"🧪","Structure of Atom":"⚛️","Dual Nature of Radiation and Matter":"💥",
+      "Chemical Bonding and Molecular Structure":"🔗","Equilibrium":"⚖️","Hydrocarbons":"⛽","Solid State":"🧊",
+      "Motion in a Straight Line":"➡️","Laws of Motion":"🔨","Work, Energy, and Power":"💣","System of Particles and Rotational Motion":"🌀",
+      "Solutions":"🥤","Electrochemistry":"🔌","Polymers":"🧵","Biomolecules":"🧬","Relations & Functions":"🔗",
+      "Alcohols, Phenols & Ethers":"🍷","Organic Chemistry Basics":"📝","Mechanical Properties of Solids":"💎",
+      "Mechanical Properties of Fluids":"💧","Inverse Trigonometric Functions":"📐","Matrices":"🧮","Determinants":"🔢",
+      "Probability":"🎲","Nuclei":"☢️","Thermal Properties of Matter":"🕯️","Statistics":"📊","Sequences and Series":"🖇️",
+      "Limits and Derivatives":"📈","Differential Equations":"","Trigonometric Functions":"📐","Electromagnetic Induction":"〰️",
+      "Classification of Elements & Periodicity":"📄","Vector Algebra":"➡️","Kinetic Theory of Gases":"💨",
+      "Semiconductor Electronics":"💻","Alternating Current":"🔁","3D Geometry":"🏗️","Integral Calculus":"",
+      "The Environmental Chemistry":"☘️","States of Matter":"🧊💧☁️"
+    };
 
-  /* PHYSICS 12 */
-  "Electric Charges and Fields": 6.6,
-  "Electrostatic Potential and Capacitance": 6.6,
-  "Current Electricity": 9.9,
-  "Moving Charges and Magnetism": 6.6,
-  "Magnetism and Matter": 6.6,
-  "Electromagnetic Induction": 6.6,
-  "Alternating Current": 3.3,
-  "Electromagnetic Waves": 3.3,
-  "Ray Optics and Optical Instruments": 9.9,
-  "Wave Optics": 6.6,
-  "Dual Nature of Radiation and Matter": 3.3,
-  "Atoms": 3.3,
-  "Nuclei": 3.3,
-  "Semiconductor Electronics": 3.3,
+    const data = {
+      Physics:{
+        11:[
+          "Units and Measurements","Motion in a Straight Line","Motion in a Plane","Laws of Motion","Work, Energy, and Power",
+          "System of Particles and Rotational Motion","Gravitation","Mechanical Properties of Solids","Mechanical Properties of Fluids",
+          "Thermal Properties of Matter","Thermodynamics","Kinetic Theory of Gases","Oscillations","Waves"
+        ],
+        12:[
+          "Electric Charges and Fields","Electrostatic Potential and Capacitance","Current Electricity","Moving Charges and Magnetism",
+          "Magnetism and Matter","Electromagnetic Induction","Alternating Current","Electromagnetic Waves",
+          "Ray Optics and Optical Instruments","Wave Optics","Dual Nature of Radiation and Matter","Atoms","Nuclei","Semiconductor Electronics"
+        ]
+      },
+      Chemistry:{
+        11:[
+          "Some Basic Concepts of Chemistry","Structure of Atom","Classification of Elements & Periodicity",
+          "Chemical Bonding and Molecular Structure","States of Matter","Thermodynamics","Equilibrium","The Redox Reaction",
+          "The Hydrogen","The s-Block Element (Alkali & Alkaline earth)","The p-Block Element (Group 13 & 14)",
+          "The Organic Chemistry – Some Basic Principles and Techniques","Hydrocarbons","The Environmental Chemistry"
+        ],
+        12:[
+          "Solid State","Solutions","Electrochemistry","Chemical Kinetics","Surface Chemistry",
+          "The p-Block Element (Group 15, 16, 17, 18)","The d-Block Element (Transition)","The f-Block Element (Lanthanides, Actinides)",
+          "The Coordination Compounds","The Haloalkanes and Haloarenes","The Alcohols, Phenols, and Ethers",
+          "The Aldehydes, Ketones, and Carboxylic Acids","The Amines","The Biomolecules","The Polymers","The Chemistry in Everyday Life"
+        ]
+      },
+      Mathematics:{
+        11:[
+          "Sets, Relations and Functions","Trigonometric Functions","Principle of Mathematical Induction",
+          "Complex Numbers and Quadratic Equations","Permutations and Combinations","Binomial Theorem","Sequences and Series",
+          "Straight Lines","Conic Sections","Introduction to 3D Geometry","Limits and Derivatives","Mathematical Reasoning",
+          "Statistics","Probability"
+        ],
+        12:[
+          "Relations and Functions","Inverse Trigonometric Functions","Matrices","Determinants","Continuity and Differentiability",
+          "Applications of Derivatives","Integrals","Applications of Integrals","Differential Equations","Vector Algebra",
+          "Three Dimensional Geometry","Linear Programming","Probability"
+        ]
+      }
+    };
 
-  /* CHEMISTRY 11 */
-  "Some Basic Concepts of Chemistry": 3.3,
-  "Structure of Atom": 6.6,
-  "Classification of Elements & Periodicity": 3.3,
-  "Chemical Bonding and Molecular Structure": 9.9,
-  "States of Matter": 3.3,
-  "Thermodynamics": 6.6,
-  "Equilibrium": 6.6,
-  "The Redox Reaction": 3.3,
-  "The Hydrogen": 3.3,
-  "The s-Block Element (Alkali & Alkaline earth)": 3.3,
-  "The p-Block Element (Group 13 & 14)": 3.3,
-  "The Organic Chemistry – Some Basic Principles and Techniques": 6.6,
-  "Hydrocarbons": 6.6,
-  "The Environmental Chemistry": 3.3,
+    const weightageData = {
+      "Units and Measurements":3.3,"Motion in a Straight Line":3.3,"Motion in a Plane":6.6,"Laws of Motion":3.3,
+      "Work, Energy, and Power":3.3,"System of Particles and Rotational Motion":6.6,"Gravitation":3.3,"Mechanical Properties of Solids":3.3,
+      "Mechanical Properties of Fluids":3.3,"Thermal Properties of Matter":3.3,"Thermodynamics":6.6,"Kinetic Theory of Gases":3.3,
+      "Oscillations":3.3,"Waves":3.3,"Electric Charges and Fields":6.6,"Electrostatic Potential and Capacitance":6.6,
+      "Current Electricity":9.9,"Moving Charges and Magnetism":6.6,"Magnetism and Matter":6.6,"Electromagnetic Induction":6.6,
+      "Alternating Current":3.3,"Electromagnetic Waves":3.3,"Ray Optics and Optical Instruments":9.9,"Wave Optics":6.6,
+      "Dual Nature of Radiation and Matter":3.3,"Atoms":3.3,"Nuclei":3.3,"Semiconductor Electronics":3.3,
+      "Some Basic Concepts of Chemistry":3.3,"Structure of Atom":6.6,"Classification of Elements & Periodicity":3.3,
+      "Chemical Bonding and Molecular Structure":9.9,"States of Matter":3.3,"Thermodynamics":6.6,"Equilibrium":6.6,
+      "The Redox Reaction":3.3,"The Hydrogen":3.3,"The s-Block Element (Alkali & Alkaline earth)":3.3,"The p-Block Element (Group 13 & 14)":3.3,
+      "The Organic Chemistry – Some Basic Principles and Techniques":6.6,"Hydrocarbons":6.6,"The Environmental Chemistry":3.3,
+      "Solid State":3.3,"Solutions":3.3,"Electrochemistry":6.6,"Chemical Kinetics":3.3,"Surface Chemistry":3.3,
+      "The p-Block Element (Group 15, 16, 17, 18)":6.6,"The d-Block Element (Transition)":6.6,"The f-Block Element (Lanthanides, Actinides)":3.3,
+      "The Coordination Compounds":6.6,"The Haloalkanes and Haloarenes":3.3,"The Alcohols, Phenols, and Ethers":6.6,
+      "The Aldehydes, Ketones, and Carboxylic Acids":6.6,"The Amines":3.3,"The Biomolecules":3.3,"The Polymers":3.3,"The Chemistry in Everyday Life":3.3,
+      "Sets, Relations and Functions":3.3,"Trigonometric Functions":3.3,"Principle of Mathematical Induction":3.3,
+      "Complex Numbers and Quadratic Equations":6.6,"Permutations and Combinations":3.3,"Binomial Theorem":3.3,
+      "Sequences and Series":6.6,"Straight Lines":6.6,"Conic Sections":9.9,"Introduction to 3D Geometry":6.6,"Limits and Derivatives":9.9,
+      "Mathematical Reasoning":3.3,"Statistics":3.3,"Probability":6.6,"Relations and Functions":3.3,"Inverse Trigonometric Functions":3.3,
+      "Matrices":6.6,"Determinants":6.6,"Continuity and Differentiability":9.9,"Applications of Derivatives":9.9,"Integrals":9.9,
+      "Applications of Integrals":6.6,"Differential Equations":3.3,"Vector Algebra":6.6,"Three Dimensional Geometry":6.6,
+      "Linear Programming":3.3
+    };
 
-  /* CHEMISTRY 12 */
-  "Solid State": 3.3,
-  "Solutions": 3.3,
-  "Electrochemistry": 6.6,
-  "Chemical Kinetics": 3.3,
-  "Surface Chemistry": 3.3,
-  "The p-Block Element (Group 15, 16, 17, 18)": 6.6,
-  "The d-Block Element (Transition)": 6.6,
-  "The f-Block Element (Lanthanides, Actinides)": 3.3,
-  "The Coordination Compounds": 6.6,
-  "The Haloalkanes and Haloarenes": 3.3,
-  "The Alcohols, Phenols, and Ethers": 6.6,
-  "The Aldehydes, Ketones, and Carboxylic Acids": 6.6,
-  "The Amines": 3.3,
-  "The Biomolecules": 3.3,
-  "The Polymers": 3.3,
-  "The Chemistry in Everyday Life": 3.3,
+    let saved = JSON.parse(localStorage.getItem('jeeChecklist')||'{}');
+    let sortPendingFirst = false;
+    let sortByWeight = false;
+    const checklistEl = document.getElementById('checklist');
+    const searchInput = document.getElementById('search');
 
-  /* MATHS 11 */
-  "Sets, Relations and Functions": 3.3,
-  "Trigonometric Functions": 3.3,
-  "Principle of Mathematical Induction": 3.3,
-  "Complex Numbers and Quadratic Equations": 6.6,
-  "Permutations and Combinations": 3.3,
-  "Binomial Theorem": 3.3,
-  "Sequences and Series": 6.6,
-  "Straight Lines": 6.6,
-  "Conic Sections": 9.9,
-  "Introduction to 3D Geometry": 6.6,
-  "Limits and Derivatives": 9.9,
-  "Mathematical Reasoning": 3.3,
-  "Statistics": 3.3,
-  "Probability": 6.6,
+    function escapeRegExp(s){ return s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'); }
+    function totalChaptersCount(){ let t=0; for(const s in data) for(const c in data[s]) t+=data[s][c].length; return t; }
+    function completedCountFromSaved(){ let cnt=0; for(const s in data) for(const c in data[s]) data[s][c].forEach((_,i)=>{ if(saved[`${s}-${c}-${i}`]) cnt++; }); return cnt; }
 
-  /* MATHS 12 */
-  "Relations and Functions": 3.3,
-  "Inverse Trigonometric Functions": 3.3,
-  "Matrices": 6.6,
-  "Determinants": 6.6,
-  "Continuity and Differentiability": 9.9,
-  "Applications of Derivatives": 9.9,
-  "Integrals": 9.9,
-  "Applications of Integrals": 6.6,
-  "Differential Equations": 3.3,
-  "Vector Algebra": 6.6,
-  "Three Dimensional Geometry": 6.6,
-  "Linear Programming": 3.3,
-  "Probability": 6.6
-};
+    function updateProgressBars(){
+      const total = totalChaptersCount();
+      const completed = completedCountFromSaved();
+      const percent = total===0 ? 0 : Math.round((completed/total)*100);
+      document.getElementById('progress-bar').style.width = percent+'%';
+      document.getElementById('progress-text').textContent = percent+'%';
 
-/* ============================
-   Existing app state
-   ============================ */
-let saved = JSON.parse(localStorage.getItem('jeeChecklist')||'{}');
-let sortPendingFirst=false;
-let sortByWeight=false; // NEW flag for weight sorting
-const checklistEl=document.getElementById('checklist');
-const searchInput=document.getElementById('search');
+      const subjectBars = {
+        Physics:{bar:document.getElementById('physics-bar'), text:document.getElementById('physics-text')},
+        Chemistry:{bar:document.getElementById('chemistry-bar'), text:document.getElementById('chemistry-text')},
+        Mathematics:{bar:document.getElementById('math-bar'), text:document.getElementById('math-text')}
+      };
 
+      for(const s in data){
+        let tot=0, comp=0;
+        for(const c in data[s]){
+          tot += data[s][c].length;
+          data[s][c].forEach((_,i)=>{ if(saved[`${s}-${c}-${i}`]) comp++; });
+        }
+        const p = tot===0 ? 0 : Math.round((comp/tot)*100);
+        subjectBars[s].bar.style.width = p + '%';
+        subjectBars[s].text.textContent = p + '%';
+      }
+    }
 
-function escapeRegExp(s){return s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');}
-function totalChaptersCount(){let t=0;for(const s in data)for(const c in data[s])t+=data[s][c].length;return t;}
-function completedCountFromSaved(){let cnt=0;for(const s in data)for(const c in data[s])data[s][c].forEach((_,i)=>{if(saved[`${s}-${c}-${i}`])cnt++;});return cnt;}
-function updateProgressBars(){
-const total=totalChaptersCount();
-const completed=completedCountFromSaved();
-const percent=total===0?0:Math.round((completed/total)*100);
-document.getElementById('progress-bar').style.width=percent+'%';
-document.getElementById('progress-text').textContent=percent+'%';
-const subjectBars={
-Physics:{bar:document.getElementById('physics-bar'),text:document.getElementById('physics-text')},
-Chemistry:{bar:document.getElementById('chemistry-bar'),text:document.getElementById('chemistry-text')},
-Mathematics:{bar:document.getElementById('math-bar'),text:document.getElementById('math-text')}
-};
-for(const s in data){
-let tot=0,comp=0;
-for(const c in data[s]){
-tot+=data[s][c].length;
-data[s][c].forEach((_,i)=>{if(saved[`${s}-${c}-${i}`]) comp++;});
-}
-const p=tot===0?0:Math.round((comp/tot)*100);
-subjectBars[s].bar.style.width=p+'%';
-subjectBars[s].text.textContent=p+'%';
-}
-}
-function highlightText(text,q){if(!q) return text; const esc=escapeRegExp(q); const re=new RegExp(`(${esc})`,'gi'); return text.replace(re,'<span class="highlight">$1</span>');}
+    function highlightText(text,q){
+      if(!q) return text;
+      const esc = escapeRegExp(q);
+      const re = new RegExp(`(${esc})`,'gi');
+      return text.replace(re,'<span class="highlight">$1</span>');
+    }
 
-/* ============================
-   render() updated to show weightage and support global weight sort
-   - sorting is applied per-card but uses global weight values
-   ============================ */
-function render(filter=''){
-  checklistEl.innerHTML='';
-  const q=(filter||'').trim().toLowerCase();
+    function render(filter=''){
+      checklistEl.innerHTML = '';
+      const q = (filter||'').trim().toLowerCase();
 
-  // build a global ordering map if needed
-  // (not strictly required but useful to compute ties consistently)
-  for(const s in data){
-    for(const c in data[s]){
-      const chaptersArr = data[s][c].map((ch,i)=>({
-        text: ch,
-        key: `${s}-${c}-${i}`,
-        checked: !!saved[`${s}-${c}-${i}`],
-        weight: (weightageData[ch] !== undefined) ? weightageData[ch] : 0
-      }));
+      for(const s in data){
+        for(const c in data[s]){
+          const chaptersArr = data[s][c].map((ch,i)=>({
+            text: ch,
+            key: `${s}-${c}-${i}`,
+            checked: !!saved[`${s}-${c}-${i}`],
+            weight: (weightageData[ch] !== undefined) ? weightageData[ch] : 0
+          }));
 
-      // filter visible
-      let visible = chaptersArr.filter(ch => ch.text.toLowerCase().includes(q));
-      if(visible.length === 0) continue;
+          let visible = chaptersArr.filter(ch => ch.text.toLowerCase().includes(q));
+          if(visible.length === 0) continue;
 
-      // Sorting priority inside each card:
-      // - If sortByWeight: sort by global weight (desc). If tie, apply pending-first if active.
-      // - Else: default original order except when pending-first toggle is on.
-      if(sortByWeight){
-        visible.sort((a,b)=>{
-          if(b.weight !== a.weight) return b.weight - a.weight;
-          // tie-breaker: pending-first toggle
-          if(sortPendingFirst) return (a.checked === b.checked) ? 0 : (a.checked ? 1 : -1);
-          return 0;
-        });
-      } else {
-        if(sortPendingFirst) visible.sort((a,b)=>(a.checked===b.checked?0:(a.checked?1:-1)));
+          if(sortByWeight){
+            visible.sort((a,b)=>{
+              if(b.weight !== a.weight) return b.weight - a.weight;
+              if(sortPendingFirst) return (a.checked === b.checked) ? 0 : (a.checked ? 1 : -1);
+              return 0;
+            });
+          } else {
+            if(sortPendingFirst) visible.sort((a,b)=>(a.checked===b.checked?0:(a.checked?1:-1)));
+          }
+
+          const card = document.createElement('div'); card.className = 'card';
+          const heading = document.createElement('h2'); heading.textContent = `${s} - Class ${c}`; card.appendChild(heading);
+
+          visible.forEach(item=>{
+            const row = document.createElement('div'); row.className = 'chapter';
+            const wrapper = document.createElement('div'); wrapper.className = 'checkbox-wrapper';
+            const input = document.createElement('input'); input.type='checkbox'; input.id = item.key; input.checked = item.checked;
+            const checkmark = document.createElement('span'); checkmark.className='checkmark';
+            wrapper.appendChild(input); wrapper.appendChild(checkmark);
+
+            const label = document.createElement('label'); label.htmlFor = item.key; label.className='label-text';
+            const icon = icons[item.text]||'📘';
+            const weightText = ` (Weightage: ${item.weight}%)`;
+            label.innerHTML = icon + ' ' + highlightText(item.text,q) + `<span class="weight-badge">${weightText}</span>`;
+
+            if(item.checked) label.classList.add('completed');
+
+            input.addEventListener('change', ()=>{
+              saved[item.key] = input.checked;
+              if(!input.checked) delete saved[item.key];
+              localStorage.setItem('jeeChecklist', JSON.stringify(saved));
+              updateProgressBars();
+              render(searchInput.value);
+            });
+
+            row.appendChild(wrapper); row.appendChild(label); card.appendChild(row);
+          });
+
+          checklistEl.appendChild(card);
+        }
       }
 
-      // Build card for subject-class combo
-      const card=document.createElement('div'); card.className='card';
-      const heading=document.createElement('h2'); heading.textContent = `${s} - Class ${c}`; card.appendChild(heading);
+      updateProgressBars();
+    }
 
-      visible.forEach(item=>{
-        const row=document.createElement('div'); row.className='chapter';
-        const wrapper=document.createElement('div'); wrapper.className='checkbox-wrapper';
-        const input=document.createElement('input'); input.type='checkbox'; input.id=item.key; input.checked=item.checked;
-        const checkmark=document.createElement('span'); checkmark.className='checkmark';
-        wrapper.appendChild(input); wrapper.appendChild(checkmark);
+    searchInput.addEventListener('input', ()=>{ render(searchInput.value); });
 
-        const label=document.createElement('label'); label.htmlFor=item.key; label.className='label-text';
-        const icon=icons[item.text]||'📘';
-        const weightText = ` (Weightage: ${item.weight}%)`;
-        label.innerHTML = icon + ' ' + highlightText(item.text,q) + `<span class="weight-badge">${weightText}</span>`;
+    document.getElementById('toggle-sort').addEventListener('click', ()=>{
+      sortPendingFirst = !sortPendingFirst;
+      document.getElementById('toggle-sort').textContent = sortPendingFirst ? "📌 Show Completed First" : "📌 Show Pending First";
+      render(searchInput.value);
+    });
 
-        if(item.checked) label.classList.add('completed');
+    document.getElementById('sort-weight').addEventListener('click', ()=>{
+      sortByWeight = !sortByWeight;
+      document.getElementById('sort-weight').textContent = sortByWeight ? "🔥 Sorted by Weight (High → Low)" : "🔥 Sort by Weightage (High → Low)";
+      render(searchInput.value);
+    });
 
-        input.addEventListener('change',()=>{
-          saved[item.key]=input.checked;
-          if(!input.checked) delete saved[item.key];
-          localStorage.setItem('jeeChecklist',JSON.stringify(saved));
-          updateProgressBars();
-          render(searchInput.value);
-        });
+    document.getElementById('reset-btn').addEventListener('click', ()=>{
+      if(confirm('Are you sure to reset all progress?')){ saved={}; localStorage.setItem('jeeChecklist', JSON.stringify(saved)); render(searchInput.value); }
+    });
 
-        row.appendChild(wrapper); row.appendChild(label); card.appendChild(row);
+    const themeToggle = document.getElementById('theme-toggle');
+    const themeIcon = document.getElementById('theme-icon');
+
+    const sunSVG = `<circle cx="12" cy="12" r="5" fill="white"/><g stroke="white" stroke-width="2"><line x1="12" y1="1" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="23"/><line x1="1" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="23" y2="12"/><line x1="4.22" y1="4.22" x2="6.36" y2="6.36"/><line x1="17.64" y1="17.64" x2="19.78" y2="19.78"/><line x1="4.22" y1="19.78" x2="6.36" y2="17.64"/><line x1="17.64" y1="6.36" x2="19.78" y2="4.22"/></g>`;
+    const moonSVG = `<path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" fill="black"/>`;
+
+    themeToggle.addEventListener('click', () => {
+      document.body.classList.toggle('light');
+      themeIcon.innerHTML = document.body.classList.contains('light') ? moonSVG : sunSVG;
+      render(searchInput.value);
+    });
+
+    render();
+  </script>
+
+  <script>
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("service-worker.js")
+          .then(reg => console.log("Service Worker registered:", reg))
+          .catch(err => console.log("Service Worker error:", err));
       });
-
-      checklistEl.appendChild(card);
     }
-  }
+  </script>
 
-  updateProgressBars();
-}
+  <script>
+    const nameEl = document.getElementById('name');
+    const shatterOverlay = document.getElementById('shatter');
+    const header = document.querySelector('header');
+    const footer = document.querySelector('footer');
 
-/* ============================
-   Event listeners (new sort-weight button + existing controls)
-   ============================ */
-searchInput.addEventListener('input',()=>{ render(searchInput.value); });
+    let typed = "";
+    let headerClicks = 0;
+    let footerTimer;
 
-document.getElementById('toggle-sort').addEventListener('click',()=>{
-  sortPendingFirst=!sortPendingFirst;
-  document.getElementById('toggle-sort').textContent = sortPendingFirst?"📌 Show Completed First":"📌 Show Pending First";
-  render(searchInput.value);
-});
+    function showName(duration=2000) { nameEl.style.opacity = 1; setTimeout(()=>{ nameEl.style.opacity = 0; }, duration); }
 
-document.getElementById('sort-weight').addEventListener('click', ()=>{
-  sortByWeight = !sortByWeight;
-  document.getElementById('sort-weight').textContent = sortByWeight ? "🔥 Sorted by Weight (High → Low)" : "🔥 Sort by Weightage (High → Low)";
-  render(searchInput.value);
-});
-
-document.getElementById('reset-btn').addEventListener('click',()=>{
-  if(confirm('Are you sure to reset all progress?')){ saved={}; localStorage.setItem('jeeChecklist',JSON.stringify(saved)); render(searchInput.value); }
-});
-
-const themeToggle = document.getElementById('theme-toggle');
-const themeIcon = document.getElementById('theme-icon');
-
-const sunSVG = `
-<circle cx="12" cy="12" r="5" fill="white"/>
-<g stroke="white" stroke-width="2">
-  <line x1="12" y1="1" x2="12" y2="4"/>
-  <line x1="12" y1="20" x2="12" y2="23"/>
-  <line x1="1" y1="12" x2="4" y2="12"/>
-  <line x1="20" y1="12" x2="23" y2="12"/>
-  <line x1="4.22" y1="4.22" x2="6.36" y2="6.36"/>
-  <line x1="17.64" y1="17.64" x2="19.78" y2="19.78"/>
-  <line x1="4.22" y1="19.78" x2="6.36" y2="17.64"/>
-  <line x1="17.64" y1="6.36" x2="19.78" y2="4.22"/>
-</g>
-`;
-
-const moonSVG = `
-<path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" fill="black"/>
-`;
-
-themeToggle.addEventListener('click', () => {
-  document.body.classList.toggle('light');
-
-  if(document.body.classList.contains('light')){
-    // Light theme → show black moon
-    themeIcon.innerHTML = moonSVG;
-  } else {
-    // Dark theme → show white sun
-    themeIcon.innerHTML = sunSVG;
-  }
-
-  render(searchInput.value); // keep your checklist updated
-});
-
-render();
-</script>
-<script>
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => {
-    navigator.serviceWorker.register("service-worker.js")
-      .then(reg => console.log("Service Worker registered:", reg))
-      .catch(err => console.log("Service Worker error:", err));
-  });
-}
-</script>
-
-<script>
-/* (All your original easter-egg / reveal / shatter code unchanged) */
-const nameEl = document.getElementById('name');
-const shatterOverlay = document.getElementById('shatter');
-const header = document.querySelector('header');
-const footer = document.querySelector('footer');
-
-let typed = "";
-let headerClicks = 0;
-let footerTimer;
-
-function showName(duration=2000) {
-  nameEl.style.opacity = 1;
-  setTimeout(() => { nameEl.style.opacity = 0; }, duration);
-}
-
-
-function glitchReveal() {
-  let text = "Nishant Jha";
-  let letters = text.split("");
-  let glitchInterval = setInterval(() => {
-    nameEl.innerText = letters.map(l =>
-      Math.random() > 0.7 ? String.fromCharCode(65+Math.random()*26) : l
-    ).join("");
-  }, 50);
-  nameEl.style.opacity = 1;
-  setTimeout(() => {
-    clearInterval(glitchInterval);
-    nameEl.innerText = text;
-    setTimeout(() => { nameEl.style.opacity = 0; }, 2000);
-  }, 1500);
-}
-
-function typewriterReveal() {
-  let text = "Nishant Jha";
-  nameEl.innerText = "";
-  nameEl.style.opacity = 1;
-  let i = 0;
-  let interval = setInterval(() => {
-    nameEl.innerText += text[i];
-    burstSparkles();
-    i++;
-    if (i >= text.length) {
-      clearInterval(interval);
-      setTimeout(() => { nameEl.style.opacity = 0; }, 2000);
+    function glitchReveal() {
+      let text = "Nishant Jha";
+      let letters = text.split("");
+      let glitchInterval = setInterval(() => {
+        nameEl.innerText = letters.map(l => Math.random() > 0.7 ? String.fromCharCode(65+Math.random()*26) : l).join("");
+      }, 50);
+      nameEl.style.opacity = 1;
+      setTimeout(() => { clearInterval(glitchInterval); nameEl.innerText = text; setTimeout(()=>{ nameEl.style.opacity = 0; }, 2000); }, 1500);
     }
-  }, 150);
-}
 
-function burstSparkles() {
-  for (let i=0; i<40; i++) {
-    let s = document.createElement("div");
-    s.className = "sparkle";
-    document.body.appendChild(s);
-    s.style.top = window.innerHeight/2 + "px";
-    s.style.left = window.innerWidth/2 + "px";
-    let dx = (Math.random()-0.5) * 400;
-    let dy = (Math.random()-0.5) * 400;
-    s.animate([
-      { transform: "translate(0,0)", opacity: 1 },
-      { transform: `translate(${dx}px,${dy}px)`, opacity: 0 }
-    ], { duration: 1000, easing: "ease-out" });
-    setTimeout(() => s.remove(), 1000);
-  }
-}
+    function typewriterReveal() {
+      let text = "Nishant Jha"; nameEl.innerText = ""; nameEl.style.opacity = 1;
+      let i = 0; let interval = setInterval(()=>{
+        nameEl.innerText += text[i]; burstSparkles(); i++;
+        if(i >= text.length){ clearInterval(interval); setTimeout(()=>{ nameEl.style.opacity = 0; }, 2000); }
+      }, 150);
+    }
 
+    function burstSparkles(){
+      for(let i=0;i<40;i++){
+        let s = document.createElement("div"); s.className = "sparkle"; document.body.appendChild(s);
+        s.style.top = window.innerHeight/2 + "px"; s.style.left = window.innerWidth/2 + "px";
+        let dx = (Math.random()-0.5) * 400; let dy = (Math.random()-0.5) * 400;
+        s.animate([{ transform: "translate(0,0)", opacity: 1 }, { transform: `translate(${dx}px,${dy}px)`, opacity: 0 }], { duration: 1000, easing: "ease-out" });
+        setTimeout(()=>s.remove(), 1000);
+      }
+    }
 
-function crystalShatter() {
-  shatterOverlay.style.display = "block";
-  for (let i=0; i<20; i++) {
-    let shard = document.createElement("div");
-    shard.className = "shard";
-    shard.style.top = Math.random()*window.innerHeight + "px";
-    shard.style.left = Math.random()*window.innerWidth + "px";
-    shard.style.transform = `rotate(${Math.random()*360}deg)`;
-    shatterOverlay.appendChild(shard);
-    setTimeout(() => shard.remove(), 1200);
-  }
-  showName(2000);
-  setTimeout(() => { shatterOverlay.style.display = "none"; }, 1200);
-}
+    function crystalShatter() {
+      shatterOverlay.style.display = "block";
+      for (let i=0;i<20;i++){
+        let shard = document.createElement("div"); shard.className = "shard";
+        shard.style.top = Math.random()*window.innerHeight + "px"; shard.style.left = Math.random()*window.innerWidth + "px";
+        shard.style.transform = `rotate(${Math.random()*360}deg)`; shatterOverlay.appendChild(shard);
+        setTimeout(()=>shard.remove(), 1200);
+      }
+      showName(2000); setTimeout(()=>{ shatterOverlay.style.display = "none"; }, 1200);
+    }
 
+    function particleSwirl(){
+      let canvas = document.createElement("canvas"); canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+      canvas.style.position = "fixed"; canvas.style.top = 0; canvas.style.left = 0; canvas.style.zIndex = 998;
+      document.body.appendChild(canvas);
+      let ctx = canvas.getContext("2d"); let particles = [];
+      for(let i=0;i<150;i++) particles.push({ x: Math.random()*canvas.width, y: Math.random()*canvas.height, dx: (Math.random()-0.5)*2, dy: (Math.random()-0.5)*2 });
+      function animate(){ ctx.clearRect(0,0,canvas.width,canvas.height); particles.forEach(p=>{ ctx.fillStyle="#fff"; ctx.fillRect(p.x,p.y,2,2); p.x+=p.dx; p.y+=p.dy; }); }
+      let anim = setInterval(animate,30);
+      setTimeout(()=>{ clearInterval(anim); canvas.remove(); showName(2000); }, 2000);
+    }
 
-function particleSwirl() {
-  let canvas = document.createElement("canvas");
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-  canvas.style.position = "fixed";
-  canvas.style.top = 0;
-  canvas.style.left = 0;
-  canvas.style.zIndex = 998;
-  document.body.appendChild(canvas);
+    function runeMorph(){
+      let runes = ["ᚠ","ᚢ","ᚦ","ᚨ","ᚱ","ᚲ","ᚷ","ᚹ"]; let text = "Nishant Jha"; let letters = text.split("");
+      nameEl.innerText = ""; nameEl.style.opacity = 1; let i = 0; let interval = setInterval(()=>{
+        nameEl.innerText = letters.map((l, idx) => idx <= i ? l : runes[Math.floor(Math.random()*runes.length)]).join("");
+        i++; if(i > letters.length){ clearInterval(interval); setTimeout(()=>{ nameEl.style.opacity = 0; }, 2000); }
+      }, 200);
+    }
 
-  let ctx = canvas.getContext("2d");
-  let particles = [];
-  for (let i=0; i<150; i++) {
-    particles.push({
-      x: Math.random()*canvas.width,
-      y: Math.random()*canvas.height,
-      dx: (Math.random()-0.5)*2,
-      dy: (Math.random()-0.5)*2
+    window.addEventListener("keydown", (e)=>{ typed += e.key.toLowerCase(); if(typed.endsWith("nishant")){ glitchReveal(); typed=""; } if(typed.endsWith("particle")){ particleSwirl(); typed=""; } if(typed.endsWith("rune")){ runeMorph(); typed=""; } });
+
+    const prepGuideTitle = document.querySelector('header h1');
+    prepGuideTitle.addEventListener("click", ()=>{
+      headerClicks++; if(headerClicks === 5){ typewriterReveal(); headerClicks = 0; }
     });
-  }
 
-  function animate() {
-    ctx.clearRect(0,0,canvas.width,canvas.height);
-    particles.forEach(p => {
-      ctx.fillStyle = "#fff";
-      ctx.fillRect(p.x, p.y, 2, 2);
-      p.x += p.dx; p.y += p.dy;
-    });
-  }
-
-  let anim = setInterval(animate, 30);
-  setTimeout(() => {
-    clearInterval(anim);
-    canvas.remove();
-    showName(2000);
-  }, 2000);
-}
-
-
-function runeMorph() {
-  let runes = ["ᚠ","ᚢ","ᚦ","ᚨ","ᚱ","ᚲ","ᚷ","ᚹ"];
-  let text = "Nishant Jha";
-  let letters = text.split("");
-  nameEl.innerText = "";
-  nameEl.style.opacity = 1;
-  let i = 0;
-  let interval = setInterval(() => {
-    nameEl.innerText = letters.map((l, idx) =>
-      idx <= i ? l : runes[Math.floor(Math.random()*runes.length)]
-    ).join("");
-    i++;
-    if (i > letters.length) {
-      clearInterval(interval);
-      setTimeout(() => { nameEl.style.opacity = 0; }, 2000);
-    }
-  }, 200);
-}
-
-
-window.addEventListener("keydown", (e) => {
-  typed += e.key.toLowerCase();
-  if (typed.endsWith("nishant")) { glitchReveal(); typed=""; }
-  if (typed.endsWith("particle")) { particleSwirl(); typed=""; }
-  if (typed.endsWith("rune")) { runeMorph(); typed=""; }
-
-});
-
-const prepGuideTitle = document.querySelector('header h1');
-
-prepGuideTitle.addEventListener("click", () => {
-    headerClicks++;
-    if (headerClicks === 5) {
-        typewriterReveal();
-        headerClicks = 0;
-    }
-});
-
-footer.addEventListener("mousedown", () => {
-  footerTimer = setTimeout(() => { crystalShatter(); }, 1000);
-});
-footer.addEventListener("mouseup", () => {
-  clearTimeout(footerTimer);
-});
-</script>
-
+    footer.addEventListener("mousedown", ()=>{ footerTimer = setTimeout(()=>{ crystalShatter(); }, 1000); });
+    footer.addEventListener("mouseup", ()=>{ clearTimeout(footerTimer); });
+  </script>
 </body>
 </html>
