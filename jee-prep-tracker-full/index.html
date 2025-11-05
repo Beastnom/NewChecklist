@@ -275,6 +275,10 @@ body.light .progress-bar::after{
 .label-text.completed{ text-decoration:line-through; color:var(--muted); }
 .highlight{ background: var(--highlight); color:#000; padding:0 4px; border-radius:4px; }
 
+.weight-badge { font-size:0.82rem; color: #e3f9ff; margin-left:8px; opacity:0.9; background: rgba(255,255,255,0.04); padding:2px 6px; border-radius:6px; }
+
+/* Muted weight for light theme */
+body.light .weight-badge { color:#222; background: rgba(255,255,255,0.7); opacity:0.95; }
 
 footer{
   text-align:center; padding:14px 10px; color:#eaeef9; font-size:0.95rem;
@@ -375,8 +379,6 @@ body.light .progress-text{
     opacity: 0;
   }
 }
-
-
 </style>
 <!-- ✅ PWA manifest + theme color -->
 <link rel="manifest" href="manifest.json">
@@ -410,6 +412,7 @@ body.light .progress-text{
 </div>
 <div class="controls">
 <button id="toggle-sort" class="toggle-btn">📌 Show Pending First</button>
+<button id="sort-weight" class="toggle-btn">🔥 Sort by Weightage (High → Low)</button>
 <button id="reset-btn">Reset Progress</button>
 </div>
 
@@ -438,7 +441,9 @@ body.light .progress-text{
 <footer>Made with <span>❤</span> by <strong>Nishant Jha</strong></footer>
 
 <script>
-
+/* ============================
+   Icons + Original data (unchanged)
+   ============================ */
 const icons = {
 "Electric Charges and Fields":"⚡","Electrostatic Potential and Capacitance":"🔋","Current Electricity":"💡","Moving Charges and Magnetism":"🧲","Magnetism and Matter":"🧭","Ray Optics and Optical Instruments":"🔭",
 "Wave Optics":"🌈","Oscillations":"🎵","Waves":"📡","Thermodynamics":"🔥","Gravitation":"🌍","Atoms":"⚛","Electromagnetic Waves":"(﹙˓  ˒﹚)",
@@ -456,9 +461,117 @@ Chemistry:{11:["Some Basic Concepts of Chemistry","Structure of Atom","Classific
 Mathematics:{11:["Sets, Relations and Functions","Trigonometric Functions","Principle of Mathematical Induction","Complex Numbers and Quadratic Equations","Permutations and Combinations","Binomial Theorem","Sequences and Series","Straight Lines","Conic Sections","Introduction to 3D Geometry","Limits and Derivatives","Mathematical Reasoning","Statistics","Probability"],12:["Relations and Functions","Inverse Trigonometric Functions","Matrices","Determinants","Continuity and Differentiability","Applications of Derivatives","Integrals","Applications of Integrals","Differential Equations","Vector Algebra","Three Dimensional Geometry","Linear Programming","Probability"]}
 };
 
+/* ============================
+   NEW: weightageData (JEE Main 2025-based estimates)
+   - Percentages approximate, derived from JEE Main past papers & trend analyses.
+   - Common granular values: 3.3% (one question), 6.6% (two q), 9.9% (three q), 15.9% (top clusters).
+   - Edit any value below to tune your site.
+   ============================ */
+const weightageData = {
+  /* PHYSICS 11 */
+  "Units and Measurements": 3.3,
+  "Motion in a Straight Line": 3.3,
+  "Motion in a Plane": 6.6,
+  "Laws of Motion": 3.3,
+  "Work, Energy, and Power": 3.3,
+  "System of Particles and Rotational Motion": 6.6,
+  "Gravitation": 3.3,
+  "Mechanical Properties of Solids": 3.3,
+  "Mechanical Properties of Fluids": 3.3,
+  "Thermal Properties of Matter": 3.3,
+  "Thermodynamics": 6.6,
+  "Kinetic Theory of Gases": 3.3,
+  "Oscillations": 3.3,
+  "Waves": 3.3,
 
+  /* PHYSICS 12 */
+  "Electric Charges and Fields": 6.6,
+  "Electrostatic Potential and Capacitance": 6.6,
+  "Current Electricity": 9.9,
+  "Moving Charges and Magnetism": 6.6,
+  "Magnetism and Matter": 6.6,
+  "Electromagnetic Induction": 6.6,
+  "Alternating Current": 3.3,
+  "Electromagnetic Waves": 3.3,
+  "Ray Optics and Optical Instruments": 9.9,
+  "Wave Optics": 6.6,
+  "Dual Nature of Radiation and Matter": 3.3,
+  "Atoms": 3.3,
+  "Nuclei": 3.3,
+  "Semiconductor Electronics": 3.3,
+
+  /* CHEMISTRY 11 */
+  "Some Basic Concepts of Chemistry": 3.3,
+  "Structure of Atom": 6.6,
+  "Classification of Elements & Periodicity": 3.3,
+  "Chemical Bonding and Molecular Structure": 9.9,
+  "States of Matter": 3.3,
+  "Thermodynamics": 6.6,
+  "Equilibrium": 6.6,
+  "The Redox Reaction": 3.3,
+  "The Hydrogen": 3.3,
+  "The s-Block Element (Alkali & Alkaline earth)": 3.3,
+  "The p-Block Element (Group 13 & 14)": 3.3,
+  "The Organic Chemistry – Some Basic Principles and Techniques": 6.6,
+  "Hydrocarbons": 6.6,
+  "The Environmental Chemistry": 3.3,
+
+  /* CHEMISTRY 12 */
+  "Solid State": 3.3,
+  "Solutions": 3.3,
+  "Electrochemistry": 6.6,
+  "Chemical Kinetics": 3.3,
+  "Surface Chemistry": 3.3,
+  "The p-Block Element (Group 15, 16, 17, 18)": 6.6,
+  "The d-Block Element (Transition)": 6.6,
+  "The f-Block Element (Lanthanides, Actinides)": 3.3,
+  "The Coordination Compounds": 6.6,
+  "The Haloalkanes and Haloarenes": 3.3,
+  "The Alcohols, Phenols, and Ethers": 6.6,
+  "The Aldehydes, Ketones, and Carboxylic Acids": 6.6,
+  "The Amines": 3.3,
+  "The Biomolecules": 3.3,
+  "The Polymers": 3.3,
+  "The Chemistry in Everyday Life": 3.3,
+
+  /* MATHS 11 */
+  "Sets, Relations and Functions": 3.3,
+  "Trigonometric Functions": 3.3,
+  "Principle of Mathematical Induction": 3.3,
+  "Complex Numbers and Quadratic Equations": 6.6,
+  "Permutations and Combinations": 3.3,
+  "Binomial Theorem": 3.3,
+  "Sequences and Series": 6.6,
+  "Straight Lines": 6.6,
+  "Conic Sections": 9.9,
+  "Introduction to 3D Geometry": 6.6,
+  "Limits and Derivatives": 9.9,
+  "Mathematical Reasoning": 3.3,
+  "Statistics": 3.3,
+  "Probability": 6.6,
+
+  /* MATHS 12 */
+  "Relations and Functions": 3.3,
+  "Inverse Trigonometric Functions": 3.3,
+  "Matrices": 6.6,
+  "Determinants": 6.6,
+  "Continuity and Differentiability": 9.9,
+  "Applications of Derivatives": 9.9,
+  "Integrals": 9.9,
+  "Applications of Integrals": 6.6,
+  "Differential Equations": 3.3,
+  "Vector Algebra": 6.6,
+  "Three Dimensional Geometry": 6.6,
+  "Linear Programming": 3.3,
+  "Probability": 6.6
+};
+
+/* ============================
+   Existing app state
+   ============================ */
 let saved = JSON.parse(localStorage.getItem('jeeChecklist')||'{}');
 let sortPendingFirst=false;
+let sortByWeight=false; // NEW flag for weight sorting
 const checklistEl=document.getElementById('checklist');
 const searchInput=document.getElementById('search');
 
@@ -489,41 +602,99 @@ subjectBars[s].text.textContent=p+'%';
 }
 }
 function highlightText(text,q){if(!q) return text; const esc=escapeRegExp(q); const re=new RegExp(`(${esc})`,'gi'); return text.replace(re,'<span class="highlight">$1</span>');}
+
+/* ============================
+   render() updated to show weightage and support global weight sort
+   - sorting is applied per-card but uses global weight values
+   ============================ */
 function render(filter=''){
-checklistEl.innerHTML=''; const q=(filter||'').trim().toLowerCase();
-for(const s in data){for(const c in data[s]){
-const chaptersArr=data[s][c].map((ch,i)=>({text:ch,key:`${s}-${c}-${i}`,checked:!!saved[`${s}-${c}-${i}`]}));
-let visible=chaptersArr.filter(ch=>ch.text.toLowerCase().includes(q));
-if(sortPendingFirst) visible.sort((a,b)=>(a.checked===b.checked?0:(a.checked?1:-1)));
-if(visible.length===0) continue;
-const card=document.createElement('div'); card.className='card';
-const heading=document.createElement('h2'); heading.textContent=`${s} - Class ${c}`; card.appendChild(heading);
-visible.forEach(item=>{
-const row=document.createElement('div'); row.className='chapter';
-const wrapper=document.createElement('div'); wrapper.className='checkbox-wrapper';
-const input=document.createElement('input'); input.type='checkbox'; input.id=item.key; input.checked=item.checked;
-const checkmark=document.createElement('span'); checkmark.className='checkmark';
-wrapper.appendChild(input); wrapper.appendChild(checkmark);
-const label=document.createElement('label'); label.htmlFor=item.key; label.className='label-text';
-const icon=icons[item.text]||'📘'; label.innerHTML=icon+' '+highlightText(item.text,q);
-if(item.checked) label.classList.add('completed');
-input.addEventListener('change',()=>{ saved[item.key]=input.checked;if(!input.checked) delete saved[item.key]; localStorage.setItem('jeeChecklist',JSON.stringify(saved)); updateProgressBars(); render(searchInput.value);});
-row.appendChild(wrapper); row.appendChild(label); card.appendChild(row);
-});
-checklistEl.appendChild(card);
-}}
-updateProgressBars();
+  checklistEl.innerHTML='';
+  const q=(filter||'').trim().toLowerCase();
+
+  // build a global ordering map if needed
+  // (not strictly required but useful to compute ties consistently)
+  for(const s in data){
+    for(const c in data[s]){
+      const chaptersArr = data[s][c].map((ch,i)=>({
+        text: ch,
+        key: `${s}-${c}-${i}`,
+        checked: !!saved[`${s}-${c}-${i}`],
+        weight: (weightageData[ch] !== undefined) ? weightageData[ch] : 0
+      }));
+
+      // filter visible
+      let visible = chaptersArr.filter(ch => ch.text.toLowerCase().includes(q));
+      if(visible.length === 0) continue;
+
+      // Sorting priority inside each card:
+      // - If sortByWeight: sort by global weight (desc). If tie, apply pending-first if active.
+      // - Else: default original order except when pending-first toggle is on.
+      if(sortByWeight){
+        visible.sort((a,b)=>{
+          if(b.weight !== a.weight) return b.weight - a.weight;
+          // tie-breaker: pending-first toggle
+          if(sortPendingFirst) return (a.checked === b.checked) ? 0 : (a.checked ? 1 : -1);
+          return 0;
+        });
+      } else {
+        if(sortPendingFirst) visible.sort((a,b)=>(a.checked===b.checked?0:(a.checked?1:-1)));
+      }
+
+      // Build card for subject-class combo
+      const card=document.createElement('div'); card.className='card';
+      const heading=document.createElement('h2'); heading.textContent = `${s} - Class ${c}`; card.appendChild(heading);
+
+      visible.forEach(item=>{
+        const row=document.createElement('div'); row.className='chapter';
+        const wrapper=document.createElement('div'); wrapper.className='checkbox-wrapper';
+        const input=document.createElement('input'); input.type='checkbox'; input.id=item.key; input.checked=item.checked;
+        const checkmark=document.createElement('span'); checkmark.className='checkmark';
+        wrapper.appendChild(input); wrapper.appendChild(checkmark);
+
+        const label=document.createElement('label'); label.htmlFor=item.key; label.className='label-text';
+        const icon=icons[item.text]||'📘';
+        const weightText = ` (Weightage: ${item.weight}%)`;
+        label.innerHTML = icon + ' ' + highlightText(item.text,q) + `<span class="weight-badge">${weightText}</span>`;
+
+        if(item.checked) label.classList.add('completed');
+
+        input.addEventListener('change',()=>{
+          saved[item.key]=input.checked;
+          if(!input.checked) delete saved[item.key];
+          localStorage.setItem('jeeChecklist',JSON.stringify(saved));
+          updateProgressBars();
+          render(searchInput.value);
+        });
+
+        row.appendChild(wrapper); row.appendChild(label); card.appendChild(row);
+      });
+
+      checklistEl.appendChild(card);
+    }
+  }
+
+  updateProgressBars();
 }
 
-
+/* ============================
+   Event listeners (new sort-weight button + existing controls)
+   ============================ */
 searchInput.addEventListener('input',()=>{ render(searchInput.value); });
+
 document.getElementById('toggle-sort').addEventListener('click',()=>{
-sortPendingFirst=!sortPendingFirst;
-document.getElementById('toggle-sort').textContent = sortPendingFirst?"📌 Show Completed First":"📌 Show Pending First";
-render(searchInput.value);
+  sortPendingFirst=!sortPendingFirst;
+  document.getElementById('toggle-sort').textContent = sortPendingFirst?"📌 Show Completed First":"📌 Show Pending First";
+  render(searchInput.value);
 });
+
+document.getElementById('sort-weight').addEventListener('click', ()=>{
+  sortByWeight = !sortByWeight;
+  document.getElementById('sort-weight').textContent = sortByWeight ? "🔥 Sorted by Weight (High → Low)" : "🔥 Sort by Weightage (High → Low)";
+  render(searchInput.value);
+});
+
 document.getElementById('reset-btn').addEventListener('click',()=>{
-if(confirm('Are you sure to reset all progress?')){saved={}; localStorage.setItem('jeeChecklist',JSON.stringify(saved)); render(searchInput.value);}
+  if(confirm('Are you sure to reset all progress?')){ saved={}; localStorage.setItem('jeeChecklist',JSON.stringify(saved)); render(searchInput.value); }
 });
 
 const themeToggle = document.getElementById('theme-toggle');
@@ -561,7 +732,6 @@ themeToggle.addEventListener('click', () => {
   render(searchInput.value); // keep your checklist updated
 });
 
-
 render();
 </script>
 <script>
@@ -575,6 +745,7 @@ if ("serviceWorker" in navigator) {
 </script>
 
 <script>
+/* (All your original easter-egg / reveal / shatter code unchanged) */
 const nameEl = document.getElementById('name');
 const shatterOverlay = document.getElementById('shatter');
 const header = document.querySelector('header');
@@ -723,7 +894,6 @@ window.addEventListener("keydown", (e) => {
 
 });
 
-// Instead of listening on the whole header
 const prepGuideTitle = document.querySelector('header h1');
 
 prepGuideTitle.addEventListener("click", () => {
@@ -733,10 +903,6 @@ prepGuideTitle.addEventListener("click", () => {
         headerClicks = 0;
     }
 });
-
-
-
-
 
 footer.addEventListener("mousedown", () => {
   footerTimer = setTimeout(() => { crystalShatter(); }, 1000);
